@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from './components/Header.jsx';
 import SeniorReviewHub from './components/SeniorReviewHub.jsx';
+import DynamicPodsManager from './components/DynamicPodsManager.jsx';
 import FinOpsMetrics from './components/FinOpsMetrics.jsx';
 import AuditTrailLog from './components/AuditTrailLog.jsx';
 import './index.css';
@@ -45,6 +46,8 @@ export default function App() {
           activeTenant={activeTenant}
           onAuditLog={handleAddAuditLog}
         />
+
+        <DynamicPodsManager activeTenant={activeTenant} />
 
         <FinOpsMetrics activeTenant={activeTenant} />
 
