@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/assets/aipods_banner_frontend_admin.jpg" alt="AI Pods Frontend Admin by OnlyOne" width="100%" style="border-radius: 8px;">
+</p>
+
 # 🛡️ AI Pods Enterprise (SaaS) - Admin Portal & Review Hub (`aipods-frontend-admin`)
 
 Este repositorio contiene la aplicación web en **React 18 / Vite** del Portal de Administración interna, la consola de gestión FinOps por tenant y el **Senior Consultant Review Hub** para auditar y aprobar respuestas complejas de AI Pods.
