@@ -30,9 +30,9 @@ export default function SeniorReviewHub({ activeTenant, onAuditLog }) {
           tenantId: 'TENANT_DEMO_001',
           podId: 'POD_AFIP_FISCAL',
           podName: 'AI Pod AFIP / ARCA Fiscal',
-          actionName: 'descargar_retenciones_arca',
-          summary: 'Simulación de consulta de retenciones/percepciones en ARCA (Mirequa).',
-          generatedCommand: 'node scripts/mis_retenciones_arca.js --cuit=20262534538',
+          actionName: 'gestionar_puntos_de_venta_arca',
+          summary: 'Simulación de consulta de Puntos de Venta en ARCA (Administración de PV y Domicilios).',
+          generatedCommand: 'node scripts/puntos_de_venta_arca.js --accion=Consultar --cuit=20262534538',
           affectedRecords: 1,
           status: 'PENDING',
           requestedAt: new Date().toISOString()
