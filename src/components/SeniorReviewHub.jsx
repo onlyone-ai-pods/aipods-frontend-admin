@@ -99,11 +99,24 @@ Total Puntos de Venta Vigentes: 3 (Verificado en ARCA/AFIP)`;
     (activeTenant === 'GLOBAL' || item.tenantId === activeTenant)
   );
 
+  const pendingCount = approvals.filter(a => a.status === 'PENDING').length;
+
   return (
     <section className="review-hub-section">
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+      `}</style>
       <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2>🧑‍⚖️ Senior Consultant Review Hub (Human-in-the-Loop)</h2>
+          <h2>
+            🧑‍⚖️ Senior Consultant Review Hub (Human-in-the-Loop)
+            <span style={{ background: '#ef4444', color: '#fff', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '700', marginLeft: '8px', animation: 'pulse 2s infinite' }}>
+              {pendingCount}
+            </span>
+          </h2>
           <p>Cola de revisión de acciones simuladas (`dry_run = true`) pendientes de confirmación humana previa mutación en producción.</p>
         </div>
         <button className="btn-secondary" onClick={fetchApprovals} style={{ background: '#334155', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>
