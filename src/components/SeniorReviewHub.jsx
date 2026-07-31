@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TelemetryDashboard from './TelemetryDashboard.jsx';
 
 export default function SeniorReviewHub({ activeTenant, onAuditLog }) {
   const [approvals, setApprovals] = useState([]);
@@ -191,6 +192,9 @@ Total Puntos de Venta Vigentes: 3 (Verificado en ARCA/AFIP)`;
           })}
         </div>
       )}
+
+      {/* DASHBOARD DE TELEMETRÍA OPENTELEMETRY & PROMETHEUS (SPEC-CORE-25 / Issue #4) */}
+      <TelemetryDashboard />
     </section>
   );
 }
