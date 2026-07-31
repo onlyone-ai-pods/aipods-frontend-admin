@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import TelemetryDashboard from './TelemetryDashboard.jsx';
 import AuditExportModal from './AuditExportModal.jsx';
-import TenantManagementView from './TenantManagementView.jsx';
 
 export default function SeniorReviewHub({ activeTenant, onAuditLog }) {
   const [approvals, setApprovals] = useState([]);
@@ -203,12 +201,6 @@ Total Puntos de Venta Vigentes: 3 (Verificado en ARCA/AFIP)`;
           })}
         </div>
       )}
-
-      {/* DASHBOARD DE TELEMETRÍA OPENTELEMETRY & PROMETHEUS (SPEC-CORE-25 / Issue #4) */}
-      <TelemetryDashboard />
-
-      {/* PANEL DE GESTIÓN MULTI-TENANT (SPEC-CORE-30) */}
-      <TenantManagementView />
 
       {/* MODAL DE EXPORTACIÓN DE REPORTES PDF / CSV (Issue #7 / SPEC-CORE-30) */}
       <AuditExportModal
