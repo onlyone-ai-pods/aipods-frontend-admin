@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import TelemetryDashboard from './TelemetryDashboard.jsx';
+import AuditExportModal from './AuditExportModal.jsx';
+import TenantManagementView from './TenantManagementView.jsx';
 
 export default function SeniorReviewHub({ activeTenant, onAuditLog }) {
   const [approvals, setApprovals] = useState([]);
   const [executionResults, setExecutionResults] = useState({});
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const fetchApprovals = async () => {
     try {
@@ -120,9 +123,17 @@ Total Puntos de Venta Vigentes: 3 (Verificado en ARCA/AFIP)`;
           </h2>
           <p>Cola de revisión de acciones simuladas (`dry_run = true`) pendientes de confirmación humana previa mutación en producción.</p>
         </div>
-        <button className="btn-secondary" onClick={fetchApprovals} style={{ background: '#334155', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>
-          🔄 Actualizar Cola
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => setIsExportOpen(true)}
+            style={{ background: 'linear-gradient(90deg, #00f2fe, #4facfe)', color: '#090d16', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: '800', cursor: 'pointer' }}
+          >
+            📄 Exportar Reporte PDF / CSV
+          </button>
+          <button className="btn-secondary" onClick={fetchApprovals} style={{ background: '#334155', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>
+            🔄 Actualizar Cola
+          </button>
+        </div>
       </div>
 
       {filteredApprovals.length === 0 ? (
@@ -195,6 +206,16 @@ Total Puntos de Venta Vigentes: 3 (Verificado en ARCA/AFIP)`;
 
       {/* DASHBOARD DE TELEMETRÍA OPENTELEMETRY & PROMETHEUS (SPEC-CORE-25 / Issue #4) */}
       <TelemetryDashboard />
+
+      {/* PANEL DE GESTIÓN MULTI-TENANT (SPEC-CORE-30) */}
+      <TenantManagementView />
+
+      {/* MODAL DE EXPORTACIÓN DE REPORTES PDF / CSV (Issue #7 / SPEC-CORE-30) */}
+      <AuditExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        approvals={approvals}
+      />
     </section>
   );
 }
