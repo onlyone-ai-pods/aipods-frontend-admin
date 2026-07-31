@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
+import AdminTabNavigation from './components/AdminTabNavigation.jsx';
 import AdminLoginView from './components/AdminLoginView.jsx';
 import AdminOnboardingWizard from './components/AdminOnboardingWizard.jsx';
 import SeniorReviewHub from './components/SeniorReviewHub.jsx';
+import TenantManagementView from './components/TenantManagementView.jsx';
+import TelemetryDashboard from './components/TelemetryDashboard.jsx';
 import DynamicPodsManager from './components/DynamicPodsManager.jsx';
 import FinOpsMetrics from './components/FinOpsMetrics.jsx';
 import AuditTrailLog from './components/AuditTrailLog.jsx';
@@ -10,7 +13,10 @@ import './index.css';
 
 export default function App() {
   const [adminSession, setAdminSession] = useState(null);
+  const [activeTab, setActiveTab] = useState('tab-review'); // 'tab-review' | 'tab-tenants' | 'tab-telemetry' | 'tab-onboarding'
   const [activeTenant, setActiveTenant] = useState('GLOBAL');
+  const pendingApprovalsCount = 1;
+
   const [auditLogs, setAuditLogs] = useState([
     {
       timestamp: '23:15:02',
@@ -51,6 +57,12 @@ export default function App() {
     return <AdminLoginView onLoginSuccess={(sess) => setAdminSession(sess)} />;
   }
 
+  const alertState = {
+    pendingApprovals: pendingApprovalsCount,
+    highUsageTenants: 1,
+    setupProgress: 100
+  };
+
   return (
     <div className="admin-app">
       <Header
@@ -59,27 +71,50 @@ export default function App() {
         onTenantChange={setActiveTenant}
       />
 
+      {/* NAVEGACIÓN POR PESTAÑAS Y SEVERIDAD DE ALERTAS (SPEC-CORE-39 / Issue #20) */}
+      <AdminTabNavigation
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        alerts={alertState}
+      />
+
       <main className="admin-main">
-        {/* WIZARD DE ONBOARDING DEL ADMINISTRADOR (SPEC-CORE-37 / Issue #18) */}
-        <AdminOnboardingWizard />
+        {/* PESTAÑA 1 (PRINCIPAL): REVIEW HUB HUMAN-IN-THE-LOOP */}
+        {activeTab === 'tab-review' && (
+          <>
+            <SeniorReviewHub
+              activeTenant={activeTenant}
+              onAuditLog={handleAddAuditLog}
+            />
+            <AuditTrailLog
+              logs={auditLogs}
+              activeTenant={activeTenant}
+            />
+          </>
+        )}
 
-        <SeniorReviewHub
-          activeTenant={activeTenant}
-          onAuditLog={handleAddAuditLog}
-        />
+        {/* PESTAÑA 2: GESTIÓN MULTI-TENANT & ODOO BILLING */}
+        {activeTab === 'tab-tenants' && (
+          <TenantManagementView />
+        )}
 
-        <DynamicPodsManager activeTenant={activeTenant} />
+        {/* PESTAÑA 3: OBSERVABILIDAD & TELEMETRÍA OPENTELEMETRY */}
+        {activeTab === 'tab-telemetry' && (
+          <>
+            <TelemetryDashboard />
+            <DynamicPodsManager activeTenant={activeTenant} />
+            <FinOpsMetrics activeTenant={activeTenant} />
+          </>
+        )}
 
-        <FinOpsMetrics activeTenant={activeTenant} />
-
-        <AuditTrailLog
-          logs={auditLogs}
-          activeTenant={activeTenant}
-        />
+        {/* PESTAÑA 4: CHECKLIST DE SETUP & ONBOARDING WIZARD */}
+        {activeTab === 'tab-onboarding' && (
+          <AdminOnboardingWizard />
+        )}
       </main>
 
       <footer className="admin-footer">
-        <p>© 2026 Martin Llanos. AI Pods Enterprise SaaS Platform — Admin Portal &amp; Senior Review Hub v6.3.0</p>
+        <p>© 2026 Martin Llanos. AI Pods Enterprise SaaS Platform — Admin Portal &amp; Senior Review Hub v66.0.0</p>
       </footer>
     </div>
   );
