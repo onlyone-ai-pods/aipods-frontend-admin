@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Header from './components/Header.jsx';
+import AdminOnboardingWizard from './components/AdminOnboardingWizard.jsx';
 import SeniorReviewHub from './components/SeniorReviewHub.jsx';
 import DynamicPodsManager from './components/DynamicPodsManager.jsx';
 import FinOpsMetrics from './components/FinOpsMetrics.jsx';
@@ -42,6 +43,9 @@ export default function App() {
       />
 
       <main className="admin-main">
+        {/* WIZARD DE ONBOARDING DEL ADMINISTRADOR (SPEC-CORE-37 / Issue #18) */}
+        <AdminOnboardingWizard />
+
         <SeniorReviewHub
           activeTenant={activeTenant}
           onAuditLog={handleAddAuditLog}
