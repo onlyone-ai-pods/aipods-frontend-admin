@@ -32,6 +32,16 @@ export default function Header({ currentRole, activeTenant, onTenantChange }) {
             <span className="role-dot"></span>
             <span className="role-text">{currentRole}</span>
           </div>
+
+          <button
+            onClick={() => {
+              sessionStorage.removeItem('aipods_admin_session');
+              window.location.reload();
+            }}
+            style={{ background: 'rgba(248, 113, 113, 0.15)', border: '1px solid rgba(248, 113, 113, 0.3)', color: '#f87171', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '700' }}
+          >
+            🚪 Cerrar Sesión
+          </button>
         </div>
       </div>
     </header>

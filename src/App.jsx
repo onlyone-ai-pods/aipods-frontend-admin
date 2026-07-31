@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
+import AdminLoginView from './components/AdminLoginView.jsx';
 import AdminOnboardingWizard from './components/AdminOnboardingWizard.jsx';
 import SeniorReviewHub from './components/SeniorReviewHub.jsx';
 import DynamicPodsManager from './components/DynamicPodsManager.jsx';
@@ -8,6 +9,7 @@ import AuditTrailLog from './components/AuditTrailLog.jsx';
 import './index.css';
 
 export default function App() {
+  const [adminSession, setAdminSession] = useState(null);
   const [activeTenant, setActiveTenant] = useState('GLOBAL');
   const [auditLogs, setAuditLogs] = useState([
     {
@@ -30,9 +32,24 @@ export default function App() {
     }
   ]);
 
+  useEffect(() => {
+    const stored = sessionStorage.getItem('aipods_admin_session');
+    if (stored) {
+      try {
+        setAdminSession(JSON.parse(stored));
+      } catch (err) {
+        sessionStorage.removeItem('aipods_admin_session');
+      }
+    }
+  }, []);
+
   const handleAddAuditLog = (newLog) => {
     setAuditLogs(prev => [newLog, ...prev]);
   };
+
+  if (!adminSession) {
+    return <AdminLoginView onLoginSuccess={(sess) => setAdminSession(sess)} />;
+  }
 
   return (
     <div className="admin-app">
