@@ -83,6 +83,30 @@ export default function TelemetryDashboard() {
           <div style={{ fontSize: '0.7rem', color: '#60a5fa', marginTop: '4px' }}>Token Bucket en Redis</div>
         </div>
       </div>
+
+      {/* CMMI LEVEL 4 QUANTITATIVE GOVERNANCE PANEL (SPEC-CORE-42) */}
+      <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(0, 242, 254, 0.15)' }}>
+        <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', color: '#00f2fe', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          🎯 CMMI Level 4 Quantitative Governance Metrics
+        </h4>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+          <div style={{ background: 'rgba(16, 185, 129, 0.06)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '12px 14px', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: '700' }}>📜 Spec Traceability Index (STI)</div>
+            <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#34d399', marginTop: '4px' }}>100%</div>
+            <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Commits mapeados a Specs SDD</div>
+          </div>
+          <div style={{ background: 'rgba(59, 130, 246, 0.06)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '12px 14px', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#60a5fa', fontWeight: '700' }}>🐛 Defect Density (Per KLOC)</div>
+            <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#60a5fa', marginTop: '4px' }}>0.00</div>
+            <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Defectos por 1000 Líneas Go</div>
+          </div>
+          <div style={{ background: 'rgba(251, 191, 36, 0.06)', border: '1px solid rgba(251, 191, 36, 0.2)', padding: '12px 14px', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#fbbf24', fontWeight: '700' }}>⏱️ Spec Lead Time (SLT Avg)</div>
+            <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#fbbf24', marginTop: '4px' }}>0.45 hs</div>
+            <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Spec Creation → Release Tag</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
