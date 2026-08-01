@@ -82,7 +82,7 @@ export default function AdminTabNavigation({ activeTab, onTabChange, alerts }) {
         }
       `}</style>
       
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '1280px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', width: '100%', padding: '0 8px' }}>
         {tabs.map(t => {
           const isActive = activeTab === t.id;
           const badgeStyle = getBadgeStyle(t.severity);
