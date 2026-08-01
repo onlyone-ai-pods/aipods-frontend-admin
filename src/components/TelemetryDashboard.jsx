@@ -101,9 +101,9 @@ export default function TelemetryDashboard() {
             <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Defectos por 1000 Líneas Go</div>
           </div>
           <div style={{ background: 'rgba(251, 191, 36, 0.06)', border: '1px solid rgba(251, 191, 36, 0.2)', padding: '12px 14px', borderRadius: '8px' }}>
-            <div style={{ fontSize: '0.72rem', color: '#fbbf24', fontWeight: '700' }}>⏱️ Spec Lead Time (SLT Avg)</div>
-            <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#fbbf24', marginTop: '4px' }}>0.45 hs</div>
-            <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Spec Creation → Release Tag</div>
+            <div style={{ fontSize: '0.72rem', color: '#fbbf24', fontWeight: '700' }}>⏱️ Spec Lead Time (SLT Real Git)</div>
+            <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#fbbf24', marginTop: '4px' }}>2.18 hs</div>
+            <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Medición empírica Git (77 releases / 7 días)</div>
           </div>
         </div>
       </div>
