@@ -59,6 +59,7 @@ export default function App() {
 
   const alertState = {
     pendingApprovals: pendingApprovalsCount,
+    auditLogsCount: auditLogs.length,
     highUsageTenants: 1,
     setupProgress: 100
   };
@@ -81,24 +82,26 @@ export default function App() {
       <main className="admin-main">
         {/* PESTAÑA 1 (PRINCIPAL): REVIEW HUB HUMAN-IN-THE-LOOP */}
         {activeTab === 'tab-review' && (
-          <>
-            <SeniorReviewHub
-              activeTenant={activeTenant}
-              onAuditLog={handleAddAuditLog}
-            />
-            <AuditTrailLog
-              logs={auditLogs}
-              activeTenant={activeTenant}
-            />
-          </>
+          <SeniorReviewHub
+            activeTenant={activeTenant}
+            onAuditLog={handleAddAuditLog}
+          />
         )}
 
-        {/* PESTAÑA 2: GESTIÓN MULTI-TENANT & ODOO BILLING */}
+        {/* PESTAÑA 2: TRAZABILIDAD & LOG INMUTABLE DE AUDITORÍA (ISO 9001 / SOC 2) */}
+        {activeTab === 'tab-audit' && (
+          <AuditTrailLog
+            logs={auditLogs}
+            activeTenant={activeTenant}
+          />
+        )}
+
+        {/* PESTAÑA 3: GESTIÓN MULTI-TENANT & ODOO BILLING */}
         {activeTab === 'tab-tenants' && (
           <TenantManagementView />
         )}
 
-        {/* PESTAÑA 3: OBSERVABILIDAD & TELEMETRÍA OPENTELEMETRY */}
+        {/* PESTAÑA 4: OBSERVABILIDAD & TELEMETRÍA OPENTELEMETRY */}
         {activeTab === 'tab-telemetry' && (
           <>
             <TelemetryDashboard />
@@ -107,7 +110,7 @@ export default function App() {
           </>
         )}
 
-        {/* PESTAÑA 4: CHECKLIST DE SETUP & ONBOARDING WIZARD */}
+        {/* PESTAÑA 5: CHECKLIST DE SETUP & ONBOARDING WIZARD */}
         {activeTab === 'tab-onboarding' && (
           <AdminOnboardingWizard />
         )}

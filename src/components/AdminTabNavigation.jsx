@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * AdminTabNavigation — Barra de Navegación por Pestañas con Indicadores de Alerta de Severidad (SPEC-CORE-39 / Issue #20).
+ * AdminTabNavigation — Barra de Navegación por 5 Pestañas Modulares con Indicadores de Severidad (SPEC-CORE-39 / Issue #20).
  */
 export default function AdminTabNavigation({ activeTab, onTabChange, alerts }) {
   const tabs = [
@@ -12,6 +12,13 @@ export default function AdminTabNavigation({ activeTab, onTabChange, alerts }) {
       badgeCount: alerts.pendingApprovals,
       severity: alerts.pendingApprovals > 0 ? 'critical' : 'normal',
       isPrimary: true
+    },
+    {
+      id: 'tab-audit',
+      label: 'Trazabilidad & Auditoría',
+      icon: '📜',
+      badgeCount: alerts.auditLogsCount ? `${alerts.auditLogsCount} logs` : 'SHA-256',
+      severity: 'success'
     },
     {
       id: 'tab-tenants',
@@ -75,7 +82,7 @@ export default function AdminTabNavigation({ activeTab, onTabChange, alerts }) {
         }
       `}</style>
       
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '1280px', margin: '0 auto' }}>
         {tabs.map(t => {
           const isActive = activeTab === t.id;
           const badgeStyle = getBadgeStyle(t.severity);
@@ -87,25 +94,25 @@ export default function AdminTabNavigation({ activeTab, onTabChange, alerts }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                padding: '14px 20px',
+                gap: '8px',
+                padding: '12px 16px',
                 background: isActive ? 'linear-gradient(180deg, rgba(0, 242, 254, 0.12), rgba(0, 242, 254, 0.02))' : 'transparent',
                 border: 'none',
                 borderBottom: isActive ? '3px solid #00f2fe' : '3px solid transparent',
                 color: isActive ? '#00f2fe' : '#94a3b8',
                 fontWeight: isActive ? '800' : '600',
-                fontSize: '0.9rem',
+                fontSize: '0.88rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 borderRadius: '8px 8px 0 0'
               }}
             >
-              <span style={{ fontSize: '1.1rem' }}>{t.icon}</span>
+              <span style={{ fontSize: '1.05rem' }}>{t.icon}</span>
               <span>{t.label}</span>
               {t.badgeCount !== null && (
                 <span
                   style={{
-                    fontSize: '0.72rem',
+                    fontSize: '0.7rem',
                     fontWeight: '800',
                     padding: '2px 8px',
                     borderRadius: '12px',
