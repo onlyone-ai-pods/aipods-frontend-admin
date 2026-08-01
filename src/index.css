@@ -378,3 +378,33 @@ body {
   color: var(--text-muted);
   font-size: 0.85rem;
 }
+
+/* RESPONSIVIDAD PARA TABLETS DESDE 8 PULGADAS Y SUPERIORES (SPEC-CORE-40) */
+@media (max-width: 1024px) {
+  .admin-app {
+    padding: 0 12px;
+  }
+
+  .admin-sub-sidebar {
+    width: 64px !important;
+    min-width: 64px !important;
+  }
+
+  .admin-sub-sidebar button span:nth-child(2) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .admin-sub-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    flex-direction: row !important;
+    overflow-x: auto;
+  }
+}

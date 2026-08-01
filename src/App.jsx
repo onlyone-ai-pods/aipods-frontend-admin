@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
 import AdminTabNavigation from './components/AdminTabNavigation.jsx';
+import AdminSubSidebar from './components/AdminSubSidebar.jsx';
 import AdminLoginView from './components/AdminLoginView.jsx';
 import AdminOnboardingWizard from './components/AdminOnboardingWizard.jsx';
 import SeniorReviewHub from './components/SeniorReviewHub.jsx';
@@ -13,7 +14,8 @@ import './index.css';
 
 export default function App() {
   const [adminSession, setAdminSession] = useState(null);
-  const [activeTab, setActiveTab] = useState('tab-review'); // 'tab-review' | 'tab-tenants' | 'tab-telemetry' | 'tab-onboarding'
+  const [activeTab, setActiveTab] = useState('tab-review');
+  const [activeTelemetrySubTab, setActiveTelemetrySubTab] = useState('sub-telemetry');
   const [activeTenant, setActiveTenant] = useState('GLOBAL');
   const pendingApprovalsCount = 1;
 
@@ -64,6 +66,12 @@ export default function App() {
     setupProgress: 100
   };
 
+  const telemetrySubItems = [
+    { id: 'sub-telemetry', label: 'Telemetría OpenTelemetry', icon: '📊', badge: 'Live' },
+    { id: 'sub-pods', label: 'AI Pods Dinámicos', icon: '🤖', badge: 'Active' },
+    { id: 'sub-finops', label: 'FinOps & Consumo Tokens', icon: '💰', badge: 'Cost' }
+  ];
+
   return (
     <div className="admin-app">
       <Header
@@ -72,7 +80,7 @@ export default function App() {
         onTenantChange={setActiveTenant}
       />
 
-      {/* NAVEGACIÓN POR PESTAÑAS Y SEVERIDAD DE ALERTAS (SPEC-CORE-39 / Issue #20) */}
+      {/* NAVEGACIÓN POR PESTAÑAS Y SEVERIDAD DE ALERTAS (SPEC-CORE-39 & SPEC-CORE-40) */}
       <AdminTabNavigation
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -101,13 +109,20 @@ export default function App() {
           <TenantManagementView />
         )}
 
-        {/* PESTAÑA 4: OBSERVABILIDAD & TELEMETRÍA OPENTELEMETRY */}
+        {/* PESTAÑA 4: OBSERVABILIDAD CON SUB-MENÚ LATERAL COLAPSABLE (SPEC-CORE-40) */}
         {activeTab === 'tab-telemetry' && (
-          <>
-            <TelemetryDashboard />
-            <DynamicPodsManager activeTenant={activeTenant} />
-            <FinOpsMetrics activeTenant={activeTenant} />
-          </>
+          <div style={{ display: 'flex', gap: '16px', minHeight: '600px' }}>
+            <AdminSubSidebar
+              items={telemetrySubItems}
+              activeSubTab={activeTelemetrySubTab}
+              onSubTabChange={setActiveTelemetrySubTab}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {activeTelemetrySubTab === 'sub-telemetry' && <TelemetryDashboard />}
+              {activeTelemetrySubTab === 'sub-pods' && <DynamicPodsManager activeTenant={activeTenant} />}
+              {activeTelemetrySubTab === 'sub-finops' && <FinOpsMetrics activeTenant={activeTenant} />}
+            </div>
+          </div>
         )}
 
         {/* PESTAÑA 5: CHECKLIST DE SETUP & ONBOARDING WIZARD */}
