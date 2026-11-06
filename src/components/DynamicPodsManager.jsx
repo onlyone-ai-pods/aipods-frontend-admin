@@ -44,7 +44,7 @@ export default function DynamicPodsManager({ activeTenant }) {
     };
 
     try {
-      const res = await fetch('http://localhost:8080/api/v1/pods/register', {
+      const res = await fetch('/api/v1/pods/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPodConfig)

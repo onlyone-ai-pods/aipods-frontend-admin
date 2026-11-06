@@ -16,7 +16,7 @@ export default function TelemetryDashboard() {
   useEffect(() => {
     const fetchTelemetry = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/v1/admin/telemetry');
+        const res = await fetch('/api/v1/admin/telemetry');
         if (res.ok) {
           const data = await res.json();
           setTelemetry(data);
@@ -45,7 +45,7 @@ export default function TelemetryDashboard() {
           </p>
         </div>
         <a
-          href="http://localhost:8080/metrics"
+          href="/metrics"
           target="_blank"
           rel="noreferrer"
           style={{ fontSize: '0.75rem', fontWeight: '700', padding: '6px 12px', borderRadius: '6px', background: 'rgba(0, 242, 254, 0.1)', color: '#00f2fe', border: '1px solid rgba(0, 242, 254, 0.3)', textDecoration: 'none' }}
