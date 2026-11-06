@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../services/session.js';
 
 /**
  * TelemetryDashboard — Dashboard de Telemetría OpenTelemetry, Prometheus & Redis (SPEC-CORE-25 / Issue #4).
@@ -16,7 +17,7 @@ export default function TelemetryDashboard() {
   useEffect(() => {
     const fetchTelemetry = async () => {
       try {
-        const res = await fetch('/api/v1/admin/telemetry');
+        const res = await apiFetch('/api/v1/admin/telemetry');
         if (res.ok) {
           const data = await res.json();
           setTelemetry(data);
