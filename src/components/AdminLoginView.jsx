@@ -1,38 +1,32 @@
 import React, { useState } from 'react';
+import { login, logout, hasRole } from '../services/session.js';
 
 /**
- * AdminLoginView — Componente de Inicio de Sesión y Desafío 2FA para Administradores (SPEC-CORE-38 / Issue #19).
+ * AdminLoginView — Ingreso al portal admin contra el core (SPEC-CORE-67.R10).
+ * Solo entran usuarios con rol platform_admin o auditor. El token queda en
+ * memoria (services/session.js). El segundo factor (TOTP) queda para otra spec.
  */
-export default function AdminLoginView({ onLoginSuccess }) {
-  const [email, setEmail] = useState('admin.consultant@acmecorp.com');
-  const [password, setPassword] = useState('AdminPods2026!');
-  const [step, setStep] = useState(1); // 1: Credenciales, 2: 2FA TOTP
-  const [otpCode, setOtpCode] = useState('');
+export default function AdminLoginView() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleCredentialsSubmit = (e) => {
+  const handleCredentialsSubmit = async (e) => {
     e.preventDefault();
-    if (email && password) {
-      setErrorMessage('');
-      setStep(2); // Avanzar a desafío 2FA TOTP
-    } else {
-      setErrorMessage('Por favor ingrese su email y contraseña de administrador.');
-    }
-  };
-
-  const handleOTPSubmit = (e) => {
-    e.preventDefault();
-    if (otpCode.length === 6) {
-      const adminSession = {
-        email: email,
-        role: 'Senior Consultant Reviewer',
-        token: `jwt_admin_${Math.random().toString(36).substring(2, 10)}`,
-        loginAt: new Date().toISOString()
-      };
-      sessionStorage.setItem('aipods_admin_session', JSON.stringify(adminSession));
-      onLoginSuccess(adminSession);
-    } else {
-      setErrorMessage('Ingrese un código OTP válido de 6 dígitos.');
+    setErrorMessage('');
+    setLoading(true);
+    try {
+      await login(email.trim(), password);
+      if (!hasRole('platform_admin', 'auditor')) {
+        logout();
+        setErrorMessage('Tu usuario no tiene acceso al portal admin.');
+      }
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setPassword('');
+      setLoading(false);
     }
   };
 
@@ -55,84 +49,42 @@ export default function AdminLoginView({ onLoginSuccess }) {
           </div>
         )}
 
-        {/* Paso 1: Ingreso de Credenciales */}
-        {step === 1 && (
-          <form onSubmit={handleCredentialsSubmit}>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>Correo Electrónico Administrador</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@empresa.com"
-                style={{ width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '0.9rem' }}
-              />
-            </div>
+        <form onSubmit={handleCredentialsSubmit}>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>Correo Electrónico Administrador</label>
+            <input
+              type="email"
+              autoComplete="username"
+              autoFocus
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@empresa.com"
+              style={{ width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '0.9rem' }}
+            />
+          </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>Contraseña de Acceso</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                style={{ width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '0.9rem' }}
-              />
-            </div>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>Contraseña de Acceso</label>
+            <input
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••••••"
+              style={{ width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '0.9rem' }}
+            />
+          </div>
 
-            <button
-              type="submit"
-              style={{ width: '100%', padding: '12px', background: 'linear-gradient(90deg, #00f2fe, #4facfe)', border: 'none', borderRadius: '10px', color: '#090d16', fontWeight: '800', fontSize: '0.95rem', cursor: 'pointer' }}
-            >
-              🔐 Continuar a Validación 2FA
-            </button>
-          </form>
-        )}
-
-        {/* Paso 2: Desafío 2FA TOTP */}
-        {step === 2 && (
-          <form onSubmit={handleOTPSubmit}>
-            <div style={{ background: 'rgba(0, 242, 254, 0.06)', border: '1px solid rgba(0, 242, 254, 0.15)', padding: '14px', borderRadius: '10px', marginBottom: '20px', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: '700', marginBottom: '4px' }}>
-                📲 Desafío 2FA Authenticator Requerido
-              </div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                Ingrese el código de 6 dígitos generado por Google Authenticator / Authy para {email}.
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '24px', textAlign: 'center' }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#94a3b8', marginBottom: '8px' }}>Código TOTP (6 dígitos)</label>
-              <input
-                type="text"
-                maxLength={6}
-                autoFocus
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value)}
-                placeholder="123456"
-                style={{ width: '180px', textAlign: 'center', padding: '12px', background: '#0f172a', border: '1px solid #00f2fe', borderRadius: '10px', color: '#00f2fe', fontSize: '1.4rem', fontWeight: '800', letterSpacing: '6px' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                style={{ width: '35%', padding: '12px', background: '#334155', border: 'none', borderRadius: '10px', color: '#fff', fontWeight: '700', cursor: 'pointer' }}
-              >
-                Volver
-              </button>
-              <button
-                type="submit"
-                style={{ width: '65%', padding: '12px', background: 'linear-gradient(90deg, #10b981, #00f2fe)', border: 'none', borderRadius: '10px', color: '#090d16', fontWeight: '800', fontSize: '0.95rem', cursor: 'pointer' }}
-              >
-                ✅ Iniciar Sesión Admin
-              </button>
-            </div>
-          </form>
-        )}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{ width: '100%', padding: '12px', background: 'linear-gradient(90deg, #00f2fe, #4facfe)', border: 'none', borderRadius: '10px', color: '#090d16', fontWeight: '800', fontSize: '0.95rem', cursor: 'pointer' }}
+          >
+            {loading ? 'Ingresando…' : '🔐 Ingresar'}
+          </button>
+        </form>
 
         <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.75rem', color: '#64748b' }}>
           Be OnlyOne AI Pods SaaS Platform • ISO 27001 Certified

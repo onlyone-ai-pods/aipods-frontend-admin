@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiFetch } from '../services/session.js';
 
 export default function DynamicPodsManager({ activeTenant }) {
   const [podsList, setPodsList] = useState([
@@ -44,7 +45,7 @@ export default function DynamicPodsManager({ activeTenant }) {
     };
 
     try {
-      const res = await fetch('/api/v1/pods/register', {
+      const res = await apiFetch('/api/v1/pods/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPodConfig)

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../services/session.js';
 import AuditExportModal from './AuditExportModal.jsx';
 
 export default function SeniorReviewHub({ activeTenant, onAuditLog }) {
@@ -8,7 +9,7 @@ export default function SeniorReviewHub({ activeTenant, onAuditLog }) {
 
   const fetchApprovals = async () => {
     try {
-      const res = await fetch('/api/v1/admin/approvals');
+      const res = await apiFetch('/api/v1/admin/approvals');
       if (res.ok) {
         const data = await res.json();
         const formatted = (data.approvals || []).map(item => ({
@@ -63,7 +64,7 @@ PV N° 00007 | Tipo: Factura Electrónica - Odoo Production   | Estado: ACTIVO
 Total Puntos de Venta Vigentes: 3 (Verificado en ARCA/AFIP)`;
 
     try {
-      const res = await fetch('/api/v1/admin/approvals/action', {
+      const res = await apiFetch('/api/v1/admin/approvals/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: item.id, action: actionStr })

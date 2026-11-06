@@ -10,10 +10,13 @@ import TelemetryDashboard from './components/TelemetryDashboard.jsx';
 import DynamicPodsManager from './components/DynamicPodsManager.jsx';
 import FinOpsMetrics from './components/FinOpsMetrics.jsx';
 import AuditTrailLog from './components/AuditTrailLog.jsx';
+import { fetchAuthMode, getSession, onSessionChange, logout } from './services/session.js';
 import './index.css';
 
 export default function App() {
-  const [adminSession, setAdminSession] = useState(null);
+  // Login real contra el core (SPEC-CORE-67.R10). Con AUTH_MODE=off no hay login.
+  const [authMode, setAuthMode] = useState('loading');
+  const [session, setSession] = useState(getSession);
   const [activeTab, setActiveTab] = useState('tab-review');
   const [activeTelemetrySubTab, setActiveTelemetrySubTab] = useState('sub-telemetry');
   const [activeTenant, setActiveTenant] = useState('GLOBAL');
@@ -41,23 +44,23 @@ export default function App() {
   ]);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('aipods_admin_session');
-    if (stored) {
-      try {
-        setAdminSession(JSON.parse(stored));
-      } catch (err) {
-        sessionStorage.removeItem('aipods_admin_session');
-      }
-    }
+    fetchAuthMode().then(setAuthMode);
+    return onSessionChange(setSession);
   }, []);
 
   const handleAddAuditLog = (newLog) => {
     setAuditLogs(prev => [newLog, ...prev]);
   };
 
-  if (!adminSession) {
-    return <AdminLoginView onLoginSuccess={(sess) => setAdminSession(sess)} />;
+  if (authMode === 'loading') {
+    return <div className="admin-app" />;
   }
+  if (authMode === 'enforce' && !session) {
+    return <AdminLoginView />;
+  }
+  const currentRole = session
+    ? `${session.user.email} · ${(session.user.roles || []).join(', ')}`
+    : 'Modo prototipo (sin login)';
 
   const alertState = {
     pendingApprovals: pendingApprovalsCount,
@@ -75,7 +78,8 @@ export default function App() {
   return (
     <div className="admin-app">
       <Header
-        currentRole="Senior Consultant Reviewer"
+        currentRole={currentRole}
+        onLogout={session ? logout : null}
         activeTenant={activeTenant}
         onTenantChange={setActiveTenant}
       />
