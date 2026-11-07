@@ -3,7 +3,7 @@ import { apiFetch, getSession, hasRole } from '../services/session.js';
 
 /**
  * UsersView — Alta, listado, activación y reseteo de contraseña de usuarios
- * contra el core (SPEC-CORE-67.R12-R13). Solo platform_admin modifica;
+ * contra el core (SPEC-CORE-67.R12-R13), y cambio de roles (R16). Solo platform_admin modifica;
  * auditor ve el listado en modo lectura.
  */
 const ROLES = [
@@ -33,6 +33,8 @@ export default function UsersView({ activeTenant }) {
   const [form, setForm] = useState(emptyForm);
   const [resetFor, setResetFor] = useState(null);
   const [resetPassword, setResetPassword] = useState('');
+  const [rolesFor, setRolesFor] = useState(null);
+  const [editRoles, setEditRoles] = useState([]);
   const noticeTimer = useRef(null);
 
   const load = useCallback(async () => {
@@ -118,6 +120,21 @@ export default function UsersView({ activeTenant }) {
     setResetPassword('');
   };
 
+  const handleRoles = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (editRoles.length === 0) return setError('Elegí al menos un rol.');
+    const res = await apiFetch(`/api/v1/admin/users/${rolesFor.id}/roles`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ roles: editRoles }),
+    });
+    if (!res.ok) return setError(await readError(res, 'No se pudieron cambiar los roles.'));
+    flash(`Roles de ${rolesFor.email} actualizados. Sus sesiones abiertas se cerraron.`);
+    setRolesFor(null);
+    load();
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div>
@@ -201,7 +218,8 @@ export default function UsersView({ activeTenant }) {
                     <td style={{ padding: '10px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
                       {!isSelf && (
                         <>
-                          <button type="button" style={{ ...btn('#334155'), marginRight: '6px' }} onClick={() => { setResetFor(u); setResetPassword(''); }}>Cambiar contraseña</button>
+                          <button type="button" style={{ ...btn('#334155'), marginRight: '6px' }} onClick={() => { setRolesFor(u); setEditRoles(u.roles || []); setResetFor(null); }}>Editar roles</button>
+                          <button type="button" style={{ ...btn('#334155'), marginRight: '6px' }} onClick={() => { setResetFor(u); setResetPassword(''); setRolesFor(null); }}>Cambiar contraseña</button>
                           <button type="button" style={btn(u.active ? 'rgba(239,68,68,0.8)' : 'rgba(16,185,129,0.8)')} onClick={() => handleToggleActive(u)}>
                             {u.active ? 'Desactivar' : 'Activar'}
                           </button>
@@ -215,6 +233,26 @@ export default function UsersView({ activeTenant }) {
           </tbody>
         </table>
       </div>
+
+      {rolesFor && (
+        <form onSubmit={handleRoles} style={card}>
+          <h3 style={{ margin: '0 0 6px', fontSize: '1rem' }}>Roles de {rolesFor.email}</h3>
+          <p style={{ margin: '0 0 12px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>Al guardar se cierran las sesiones abiertas de este usuario.</p>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '14px', fontSize: '0.85rem' }}>
+            {ROLES.map((r) => (
+              <label key={r.id} style={{ display: 'flex', gap: '6px', alignItems: 'center', cursor: 'pointer' }}>
+                <input type="checkbox" checked={editRoles.includes(r.id)}
+                  onChange={() => setEditRoles((cur) => (cur.includes(r.id) ? cur.filter((x) => x !== r.id) : [...cur, r.id]))} />
+                {r.label}
+              </label>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" style={btn('linear-gradient(90deg, #00f2fe, #4facfe)', '#090d16')}>Guardar roles</button>
+            <button type="button" style={btn('#334155')} onClick={() => setRolesFor(null)}>Cancelar</button>
+          </div>
+        </form>
+      )}
 
       {resetFor && (
         <form onSubmit={handleReset} style={card}>
