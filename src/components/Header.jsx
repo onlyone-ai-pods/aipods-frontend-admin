@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Header({ currentRole, activeTenant, onTenantChange, onLogout }) {
+export default function Header({ currentRole, activeTenant, onTenantChange, onLogout, onChangePassword }) {
   return (
     <header className="admin-header">
       <div className="header-container">
@@ -32,6 +32,15 @@ export default function Header({ currentRole, activeTenant, onTenantChange, onLo
             <span className="role-dot"></span>
             <span className="role-text">{currentRole}</span>
           </div>
+
+          {onChangePassword && (
+            <button
+              onClick={onChangePassword}
+              style={{ background: 'rgba(148, 163, 184, 0.12)', border: '1px solid rgba(148, 163, 184, 0.3)', color: '#cbd5e1', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '700' }}
+            >
+              🔑 Contraseña
+            </button>
+          )}
 
           {onLogout && (
           <button

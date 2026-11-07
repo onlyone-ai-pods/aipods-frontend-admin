@@ -10,6 +10,8 @@ import TelemetryDashboard from './components/TelemetryDashboard.jsx';
 import DynamicPodsManager from './components/DynamicPodsManager.jsx';
 import FinOpsMetrics from './components/FinOpsMetrics.jsx';
 import AuditTrailLog from './components/AuditTrailLog.jsx';
+import UsersView from './components/UsersView.jsx';
+import ChangePasswordModal from './components/ChangePasswordModal.jsx';
 import { fetchAuthMode, getSession, onSessionChange, logout } from './services/session.js';
 import './index.css';
 
@@ -17,6 +19,7 @@ export default function App() {
   // Login real contra el core (SPEC-CORE-67.R10). Con AUTH_MODE=off no hay login.
   const [authMode, setAuthMode] = useState('loading');
   const [session, setSession] = useState(getSession);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [activeTab, setActiveTab] = useState('tab-review');
   const [activeTelemetrySubTab, setActiveTelemetrySubTab] = useState('sub-telemetry');
   const [activeTenant, setActiveTenant] = useState('GLOBAL');
@@ -80,6 +83,7 @@ export default function App() {
       <Header
         currentRole={currentRole}
         onLogout={session ? logout : null}
+        onChangePassword={session ? () => setShowPasswordModal(true) : null}
         activeTenant={activeTenant}
         onTenantChange={setActiveTenant}
       />
@@ -113,6 +117,11 @@ export default function App() {
           <TenantManagementView />
         )}
 
+        {/* PESTAÑA: USUARIOS (SPEC-CORE-67.R12-R13) */}
+        {activeTab === 'tab-users' && (
+          <UsersView activeTenant={activeTenant} />
+        )}
+
         {/* PESTAÑA 4: OBSERVABILIDAD CON SUB-MENÚ LATERAL COLAPSABLE (SPEC-CORE-40) */}
         {activeTab === 'tab-telemetry' && (
           <div style={{ display: 'flex', gap: '16px', minHeight: '600px' }}>
@@ -134,6 +143,8 @@ export default function App() {
           <AdminOnboardingWizard />
         )}
       </main>
+
+      {showPasswordModal && <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />}
 
       <footer className="admin-footer">
         <p>© 2026 Martin Llanos. AI Pods Enterprise SaaS Platform — Admin Portal &amp; Senior Review Hub v66.0.0</p>

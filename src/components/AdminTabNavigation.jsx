@@ -28,6 +28,13 @@ export default function AdminTabNavigation({ activeTab, onTabChange, alerts }) {
       severity: alerts.highUsageTenants > 0 ? 'warning' : 'normal'
     },
     {
+      id: 'tab-users',
+      label: 'Usuarios',
+      icon: '👥',
+      badgeCount: null,
+      severity: 'normal'
+    },
+    {
       id: 'tab-telemetry',
       label: 'Observabilidad & Telemetría',
       icon: '📊',
