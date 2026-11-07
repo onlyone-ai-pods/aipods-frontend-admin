@@ -6,43 +6,33 @@ export default function SeniorReviewHub({ activeTenant, onAuditLog }) {
   const [approvals, setApprovals] = useState([]);
   const [executionResults, setExecutionResults] = useState({});
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [loadError, setLoadError] = useState('');
 
   const fetchApprovals = async () => {
     try {
       const res = await apiFetch('/api/v1/admin/approvals');
-      if (res.ok) {
-        const data = await res.json();
-        const formatted = (data.approvals || []).map(item => ({
-          id: item.token,
-          tenantId: item.tenant_id || 'TENANT_DEMO_001',
-          podId: item.pod_id,
-          podName: item.pod_id === 'POD_AFIP_FISCAL' ? 'AI Pod AFIP / ARCA Fiscal' : item.pod_id,
-          actionName: item.action_name,
-          summary: item.summary,
-          generatedCommand: item.command,
-          affectedRecords: 1,
-          status: item.status,
-          executionResult: item.execution_result,
-          requestedAt: item.requested_at
-        }));
-        setApprovals(formatted);
-      }
-    } catch (err) {
-      setApprovals([
-        {
-          id: 'dryrun_token_sha256_mock99120',
-          tenantId: 'TENANT_DEMO_001',
-          podId: 'POD_AFIP_FISCAL',
-          podName: 'AI Pod AFIP / ARCA Fiscal',
-          actionName: 'gestionar_puntos_de_venta_arca',
-          summary: 'Simulación de consulta de Puntos de Venta en ARCA (Administración de PV y Domicilios).',
-          generatedCommand: 'node scripts/puntos_de_venta_arca.js --accion=Consultar --cuit=20262534538',
-          affectedRecords: 1,
-          status: 'PENDING',
-          requestedAt: new Date().toISOString()
-        }
-      ]);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const formatted = (data.approvals || []).map(item => ({
+        id: item.token,
+        tenantId: item.tenant_id || 'TENANT_DEMO_001',
+        podId: item.pod_id,
+        podName: item.pod_id === 'POD_AFIP_FISCAL' ? 'AI Pod AFIP / ARCA Fiscal' : item.pod_id,
+        actionName: item.action_name,
+        summary: item.summary,
+        generatedCommand: item.command,
+        affectedRecords: 1,
+        status: item.status,
+        executionResult: item.execution_result,
+        requestedAt: item.requested_at
+      }));
+      setApprovals(formatted);
+    } catch {
+      // Sin datos de ejemplo: si la API falla, se avisa y se deja la última cola conocida.
+      setLoadError('No se pudo actualizar la cola de aprobaciones. Reintentando…');
+      return;
     }
+    setLoadError('');
   };
 
   useEffect(() => {
@@ -121,6 +111,7 @@ Total Puntos de Venta Vigentes: 3 (Verificado en ARCA/AFIP)`;
             </span>
           </h2>
           <p>Cola de revisión de acciones simuladas (`dry_run = true`) pendientes de confirmación humana previa mutación en producción.</p>
+          {loadError && <p role="alert" style={{ color: '#f87171' }}>{loadError}</p>}
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
