@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { hasRole } from '../services/session.js';
+import TenantLLMModelsPanel from './TenantLLMModelsPanel.jsx';
 
 /**
  * TenantManagementView — Panel de Gestión Multi-Tenant & Estado de Pods (SPEC-CORE-30).
+ * La acción "Modelos LLM" (SPEC-CORE-74.R17) solo se muestra a platform_admin.
  */
 export default function TenantManagementView() {
+  const { t: tr } = useTranslation();
+  const canConfigureLLM = hasRole('platform_admin');
+  const [llmTenant, setLlmTenant] = useState(null);
   const [tenants, setTenants] = useState([
     {
       id: 'TENANT_DEMO_001',
@@ -94,6 +101,20 @@ export default function TenantManagementView() {
                     </span>
                   </td>
                   <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                    {canConfigureLLM && (
+                      <button
+                        onClick={() => setLlmTenant(t.id)}
+                        aria-pressed={llmTenant === t.id}
+                        style={{
+                          minHeight: '44px', padding: '9px 14px', marginRight: '8px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer',
+                          background: llmTenant === t.id ? '#00f2fe' : 'transparent',
+                          color: llmTenant === t.id ? '#0f172a' : '#f8fafc',
+                          border: '1px solid rgba(0, 242, 254, 0.6)'
+                        }}
+                      >
+                        {tr('llm_models_action')}
+                      </button>
+                    )}
                     <button
                       onClick={() => toggleTenantStatus(t.id)}
                       style={{
@@ -112,6 +133,10 @@ export default function TenantManagementView() {
           </tbody>
         </table>
       </div>
+
+      {canConfigureLLM && llmTenant && (
+        <TenantLLMModelsPanel key={llmTenant} tenantId={llmTenant} onClose={() => setLlmTenant(null)} />
+      )}
     </div>
   );
 }
